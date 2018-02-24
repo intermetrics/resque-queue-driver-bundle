@@ -10,7 +10,7 @@ class McfedrResqueQueueDriverExtensionTest extends WebTestCase
     public function testConfiguration()
     {
         $client = static::createClient();
-        $this->assertTrue($client->getContainer()->has(ResqueQueueManager::class));
-        $this->assertTrue($client->getContainer()->has('mcfedr_queue_manager.default'));
+        $this->assertTrue($client->getContainer()->has(ResqueQueueManager::class), 'service for resque queue manager exists');
+        $this->assertTrue($client->getContainer()->has('mcfedr_queue_manager.default'), 'default manager exists');
     }
 }

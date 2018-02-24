@@ -16,8 +16,17 @@ QUEUE=default APP_INCLUDE=var/bootstrap.php.cache REDIS_BACKEND=127.0.0.1:6379 .
 PREFIX="my_app:" REDIS_BACKEND=127.0.0.1:6379 ./vendor/bin/resque-scheduler
 ```
 
-Add `VVERBOSE=1` to the environment to get more logging.
+* Add `VVERBOSE=1` to the environment to get more logging.
 
+It can be useful to decouple the queueing (master) and execution (slave) of jobs in a
+micro service architecture. For this it can be necessary to set specific `kernel_options`
+for a worker if they differ from the master. 
+
+* Add `KERNEL_CLASS` with the fully qualified class name of the kernel to override the `kernel.root_dir` option.
+  If your kernel is not located in the root namespace (like in symfony flex applications),
+  this is the only way to specify the class name of the kernel class.
+* Add `SYMFONY_ENV` or `APP_ENV` to override the `kernel.environment` option.
+* Add `SYMFONY_DEBUG` or `APP_DEBUG` to override the `kernel.debug` option.
 
 ## Install
 
