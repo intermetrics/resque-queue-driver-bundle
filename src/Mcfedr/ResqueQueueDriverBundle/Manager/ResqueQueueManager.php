@@ -31,6 +31,11 @@ class ResqueQueueManager implements QueueManager
      */
     private $trackStatus;
 
+    /**
+     * @var string
+     */
+    private $jobClass;
+
     public function __construct(array $options)
     {
         $this->defaultQueue = $options['default_queue'];
@@ -43,6 +48,7 @@ class ResqueQueueManager implements QueueManager
             }
         }
         $this->trackStatus = $options['track_status'];
+        $this->jobClass = $options['job_class'] ?? \Mcfedr\ResqueQueueDriverBundle\Resque\Job::class;
     }
 
     private function setKernelOptions(array $kernelOptions)
@@ -59,6 +65,7 @@ class ResqueQueueManager implements QueueManager
     public function put($name, array $arguments = [], array $options = [])
     {
         $queue = isset($options['queue']) ? $options['queue'] : $this->defaultQueue;
+        $jobClass = isset($options['job_class']) ? $options['job_class'] : $this->jobClass;
 
         $resqueArguments = [
             'name' => $name,
@@ -80,13 +87,13 @@ class ResqueQueueManager implements QueueManager
 
         if (!$this->debug) {
             if ($when) {
-                \ResqueScheduler::enqueueAt($when, $queue, \Mcfedr\ResqueQueueDriverBundle\Resque\Job::class, $resqueArguments, $trackJobStatus);
+                \ResqueScheduler::enqueueAt($when, $queue, $jobClass, $resqueArguments, $trackJobStatus);
             } else {
-                $id = \Resque::enqueue($queue, \Mcfedr\ResqueQueueDriverBundle\Resque\Job::class, $resqueArguments, $trackJobStatus);
+                $id = \Resque::enqueue($queue, $jobClass, $resqueArguments, $trackJobStatus);
             }
         }
 
-        return new ResqueJob($resqueArguments, $id, $when, $queue, \Mcfedr\ResqueQueueDriverBundle\Resque\Job::class, $trackJobStatus);
+        return new ResqueJob($resqueArguments, $id, $when, $queue, $jobClass, $trackJobStatus);
     }
 
     public function delete(Job $job)
